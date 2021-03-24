@@ -1,10 +1,13 @@
 const express = require("express");
 const users = express.Router();
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const User = require("../models/User");
 users.use(cors());
+
+process.env.SECRET_KEY = "secret";
 
 users.post("/register", (req, res) => {
   const today = new Date();
@@ -48,12 +51,16 @@ users.post("/login", (req, res) => {
       if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
           // Passwords match
-          const sess = req.session;
-          console.log(sess);
-          const { username, password } = req.body;
-          sess.username = username;
-          sess.password = password;
-          res.json({ data: sess, result: "success" });
+          const payload = {
+            _id: user._id,
+            first_name: user.first_name,
+            username: user.username,
+            email: user.email,
+          };
+          let token = jwt.sign(payload, process.env.SECRET_KEY, {
+            expiresIn: 1440,
+          });
+          return res.status(200).send({ message: "success", token: token });
         } else {
           // Passwords don't match
           res.json({ error: "Şifreler eşleşmiyor" });
@@ -65,15 +72,6 @@ users.post("/login", (req, res) => {
     .catch((err) => {
       res.send("error: " + err);
     });
-});
-
-users.post("/logout", (req, res) => {
-  console.log("session++" + JSON.stringify(req.session));
-  req.session.destroy((err) => {
-    if (err) {
-      return console.log(err);
-    }
-  });
 });
 
 module.exports = users;

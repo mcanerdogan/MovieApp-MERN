@@ -1,12 +1,9 @@
 import React, { Component } from "react";
-import { logout } from "./UserFunctions";
 
 export default class Homepage extends Component {
   exit(e) {
-    logout().then((res) => {
-      e.preventDefault();
-      localStorage.removeItem("usersession");
-    });
+    e.preventDefault();
+    localStorage.removeItem("usertoken");
     this.props.history.push(`/login`);
   }
   render() {

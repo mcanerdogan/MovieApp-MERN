@@ -20,23 +20,9 @@ export const login = (user) => {
       password: user.password,
     })
     .then((response) => {
-      localStorage.setItem("usersession", response.data.data);
-      console.log(JSON.stringify(localStorage.getItem("usersession")));
+      localStorage.setItem("usertoken", response.data);
+      console.log(JSON.stringify(localStorage.getItem("usertoken")));
       return response.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-export const logout = (user) => {
-  let session = localStorage.getItem("usersession");
-  console.log(JSON.stringify(localStorage.getItem("usersession")));
-  return axios
-    .post("http://localhost:5000/users/logout", session)
-    .then((response) => {
-      console.log(response);
-      console.log("çıkış yapıldı");
     })
     .catch((err) => {
       console.log(err);
